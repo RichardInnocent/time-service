@@ -24,6 +24,6 @@ jobs:
         run: mvn test
       - name: Increment version
         id: increment-version
-        uses: RichardInnocent/semantic-versioning-maven@v0.0.34
+        uses: RichardInnocent/semantic-versioning-maven@v0.0.35
         with:
           access-token: ${{ github.token }}
