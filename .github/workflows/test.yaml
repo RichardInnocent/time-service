@@ -14,11 +14,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Use Java Temurin 15
+      - name: Use Java Zulu 15
         uses: actions/setup-java@v2
         with:
           java-version: '15'
-          distribution: 'temurin'
+          distribution: 'zulu'
           cache: 'maven'
       - name: Test with Maven
         run: mvn test
