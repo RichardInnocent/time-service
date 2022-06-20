@@ -2,11 +2,11 @@ package org.richardinnocent.timeservice;
 
 import org.junit.jupiter.api.Test;
 
-class ApplicationTest {
+class TimeServiceApplicationTest {
 
   @Test
   public void constructor_always_runs() {
-    new Application();
+    new TimeServiceApplication();
   }
 
 }
