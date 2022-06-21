@@ -1,6 +1,8 @@
 # time-service
 A service where users can register to receive time updates at a user-defined frequency.
 
+![example workflow](https://github.com/RichardInnocent/time-service/actions/workflows/Test/badge.svg)
+
 ## How to use this service
 
 ### Registering a callback
