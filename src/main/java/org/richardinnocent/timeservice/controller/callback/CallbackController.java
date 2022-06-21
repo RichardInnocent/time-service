@@ -31,6 +31,13 @@ public class CallbackController {
     throw NOT_IMPLEMENTED_EXCEPTION;
   }
 
+  /*
+   * I personally wouldn't normally implement it like this. I think a more RESTful way of doing
+   * this would be to make a PUT request to /callbacks/{callbackId}. Theoretically, I could have
+   * used the URL as the ID but this feels funky to me, especially with how this might end up
+   * looking with URL encoding. I kept it like this for now rather than replace it with a separate
+   * route to stick to the spec.
+   */
   @PutMapping
   public CallbackDto updateCallback(
       @RequestParam("url") String url,
@@ -39,6 +46,10 @@ public class CallbackController {
     throw NOT_IMPLEMENTED_EXCEPTION;
   }
 
+  /*
+   * Similar comments as above, a DELETE to /callbacks/{callbackId} would be more RESTful, but this
+   * is here so I can stick to spec.
+   */
   @DeleteMapping(consumes = MediaType.ALL_VALUE)
   public CallbackDto deleteCallback(@RequestParam("url") String url) {
     throw NOT_IMPLEMENTED_EXCEPTION;
