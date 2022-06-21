@@ -29,7 +29,7 @@ of the callback you wish to edit as a request parameter. Ensure that the content
 `application/json`. Here is an example payload:
 ```json
 {
-  "url": "https://my-callback-url.com"
+  "frequencySeconds": 15
 }
 ```
 
