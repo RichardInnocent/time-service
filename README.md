@@ -1,5 +1,5 @@
 # time-service
-![CI status](https://github.com/RichardInnocent/time-service/actions/workflows/ci.yaml/badge.svg)
+![CI status](https://github.com/RichardInnocent/time-service/workflows/ci/badge.svg)
 
 A service where users can register to receive time updates at a user-defined frequency.
 
