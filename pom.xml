@@ -6,7 +6,7 @@
 
   <groupId>org.richardinnocent</groupId>
   <artifactId>time-service</artifactId>
-  <version>0.0.4</version>
+  <version>0.0.5</version>
   <description>
     A service where users can register to receive time updates at a user-defined frequency.
   </description>
