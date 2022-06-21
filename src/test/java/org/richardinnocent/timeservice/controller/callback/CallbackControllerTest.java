@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
@@ -18,22 +19,55 @@ class CallbackControllerTest {
   private MockMvc mockMvc;
 
   @Test
-  public void post$callback_RequestBodyIsValid_RequestAccepted() throws Exception {
+  public void post$callback_RequestBodyIsValid_Returns501() throws Exception {
     mockMvc
         .perform(
             post("/callbacks")
                 .content("{\"frequencySeconds\":30,\"url\":\"http://test.com\"}")
                 .contentType(MediaType.APPLICATION_JSON)
         )
-        .andExpect(status().isOk());
+        .andExpect(status().isNotImplemented());
   }
 
   @Test
-  public void post$callback_RequestBodyIsInvalid_RequestAccepted() throws Exception {
+  public void post$callback_RequestBodyIsInvalid_Returns400() throws Exception {
     mockMvc
         .perform(
             post("/callbacks")
                 .content("{\"frequencySeconds\":0,\"url\":\"http://test.com\"}")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  public void put$callback_RequestBodyAndUrlParameterAreValid_Returns501() throws Exception {
+    mockMvc
+        .perform(
+            put("/callbacks?url=https://test.com")
+                .content("{\"frequencySeconds\":30}")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+        .andExpect(status().isNotImplemented());
+  }
+
+  @Test
+  public void put$callback_UrlParameterIsMissing_Returns400() throws Exception {
+    mockMvc
+        .perform(
+            put("/callbacks")
+                .content("{\"frequencySeconds\":30}")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  public void put$callback_RequestBodyIsInvalid_Returns400() throws Exception {
+    mockMvc
+        .perform(
+            put("/callbacks?url=https://test.com")
+                .content("{\"frequencySeconds\":0}")
                 .contentType(MediaType.APPLICATION_JSON)
         )
         .andExpect(status().isBadRequest());
