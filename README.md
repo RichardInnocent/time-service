@@ -15,7 +15,7 @@ is set to `application/json`. Here is an example payload:
 }
 ```
 
-Here is a cURL request targeting the `localhost`:
+Here is a cURL request targeting `localhost`:
 
 ```bash
 curl \
@@ -35,7 +35,7 @@ of the callback you wish to edit as a request parameter. Ensure that the content
 }
 ```
 
-Here is a cURL request targeting localhost:
+Here is a cURL request targeting `localhost`:
 
 ```bash
 curl \
