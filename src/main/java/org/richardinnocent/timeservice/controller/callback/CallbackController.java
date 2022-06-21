@@ -7,6 +7,7 @@ import org.richardinnocent.timeservice.controller.models.ConfigureCallbackDto;
 import org.richardinnocent.timeservice.controller.models.ConfigureFrequencyDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,6 +36,11 @@ public class CallbackController {
       @RequestParam("url") String url,
       @Valid @RequestBody ConfigureFrequencyDto frequencyDto
   ) {
+    throw NOT_IMPLEMENTED_EXCEPTION;
+  }
+
+  @DeleteMapping(consumes = MediaType.ALL_VALUE)
+  public CallbackDto deleteCallback(@RequestParam("url") String url) {
     throw NOT_IMPLEMENTED_EXCEPTION;
   }
 

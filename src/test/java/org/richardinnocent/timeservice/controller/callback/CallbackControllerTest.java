@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -70,6 +71,20 @@ class CallbackControllerTest {
                 .content("{\"frequencySeconds\":0}")
                 .contentType(MediaType.APPLICATION_JSON)
         )
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  public void delete$callback_UrlIsSpecified_Returns501() throws Exception {
+    mockMvc
+        .perform(delete("/callbacks?url=https://test.com"))
+        .andExpect(status().isNotImplemented());
+  }
+
+  @Test
+  public void delete$callback_UrlIsNotSpecified_Returns400() throws Exception {
+    mockMvc
+        .perform(delete("/callbacks"))
         .andExpect(status().isBadRequest());
   }
 
