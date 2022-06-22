@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Ensures that the action runs over multiple commits
       - name: Use Java Zulu 15
         uses: actions/setup-java@v2
         with:
