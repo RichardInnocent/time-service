@@ -54,3 +54,22 @@ Here is a cURL request targeting `localhost`:
 ```bash
 curl -X DELETE "http://localhost:8080/callbacks?url=https://my-callback-url.com"
 ```
+
+## Running the application
+
+### Prerequisites
+You'll need to install the following:
+- Java (version 15 or later)
+- Apache Maven
+
+### Building the jar
+The jar can be built with the following command:
+```bash
+mvn package
+```
+
+### Running the jar
+The jar, typically located in the `target` director, can be run with the following command:
+```bash
+java -jar time-service.jar
+```
