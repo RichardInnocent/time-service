@@ -9,6 +9,10 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
 public class ConcurrentCallbackService implements CallbackService {
 
   private final ScheduledExecutorService scheduler;
@@ -19,6 +23,7 @@ public class ConcurrentCallbackService implements CallbackService {
     this(Executors.newScheduledThreadPool(threadCount), taskFactory);
   }
 
+  @Autowired
   public ConcurrentCallbackService(
       ScheduledExecutorService scheduler,
       CurrentTimeCallbackTaskFactory taskFactory
