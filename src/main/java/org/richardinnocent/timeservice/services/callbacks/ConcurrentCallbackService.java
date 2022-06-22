@@ -49,6 +49,10 @@ public class ConcurrentCallbackService implements CallbackService {
     synchronized (scheduledTasks) {
       var oldTask = scheduledTasks.get(uri);
       if (oldTask == null) {
+        // Exceptions are expensive, so do we want to throw the exception synchronously like this?
+        // We could store this data in a different field and defer the exception until after this
+        // block. This will decrease readability, and is difficult to assess the performance
+        // improvement this would bring without benchmark tests.
         throw new CallbackNotFoundException(uri);
       }
       oldTask.cancel(false);
