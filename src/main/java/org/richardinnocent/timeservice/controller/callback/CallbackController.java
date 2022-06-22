@@ -54,7 +54,9 @@ public class CallbackController {
       @RequestParam("url") String url,
       @Valid @RequestBody ConfigureFrequencyDto frequencyDto
   ) {
-    throw NOT_IMPLEMENTED_EXCEPTION;
+    URI uri = getUri(url);
+    callbackService.updateCallback(uri, frequencyDto.getFrequencySeconds());
+    return new CallbackDto(uri, frequencyDto.getFrequencySeconds());
   }
 
   /*
@@ -75,7 +77,6 @@ public class CallbackController {
     try {
       return new URI(url);
     } catch (URISyntaxException e) {
-      // The url should already be a valid URI anyway, but better to be safe!
       throw new URIInvalidException(url, e);
     }
   }

@@ -2,6 +2,7 @@ package org.richardinnocent.timeservice.controller.callback;
 
 import org.junit.jupiter.api.Test;
 import org.richardinnocent.timeservice.services.callbacks.CallbackAlreadyExistsException;
+import org.richardinnocent.timeservice.services.callbacks.CallbackNotFoundException;
 import org.richardinnocent.timeservice.services.callbacks.CallbackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -28,20 +29,21 @@ class CallbackControllerTest {
   private CallbackService callbackService;
 
   @Test
-  void post$callback_RequestBodyIsValidAndCallbackIsAddedSuccessfully_Returns200() throws Exception {
+  void post$callback_RequestBodyIsValidAndCallbackIsAddedSuccessfully_Returns200()
+      throws Exception {
     mockMvc
         .perform(
             post("/callbacks")
                 .content("""
-                             {"frequencySeconds":30,"url":"http://test.com"}""")
+                             {"frequencySeconds":30,"url":"https://test.com"}""")
                 .contentType(MediaType.APPLICATION_JSON)
         )
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(content().json("""
-                                      {"url": "http://test.com","frequencySeconds": 30}"""));
+                                      {"url": "https://test.com","frequencySeconds": 30}"""));
     verify(callbackService, times(1)).addCallback(
-        argThat(uri -> uri.toString().equals("http://test.com")),
+        argThat(uri -> uri.toString().equals("https://test.com")),
         eq(30)
     );
   }
@@ -56,7 +58,7 @@ class CallbackControllerTest {
         .perform(
             post("/callbacks")
                 .content("""
-                             {"frequencySeconds":30,"url":"http://test.com"}""")
+                             {"frequencySeconds":30,"url":"https://test.com"}""")
                 .contentType(MediaType.APPLICATION_JSON)
         )
         .andExpect(status().isConflict());
@@ -68,22 +70,46 @@ class CallbackControllerTest {
         .perform(
             post("/callbacks")
                 .content("""
-                             {"frequencySeconds":0,"url":"http://test.com"}""")
+                             {"frequencySeconds":0,"url":"https://test.com"}""")
                 .contentType(MediaType.APPLICATION_JSON)
         )
         .andExpect(status().isBadRequest());
   }
 
   @Test
-  void put$callback_RequestBodyAndUrlParameterAreValid_Returns501() throws Exception {
+  void put$callback_RequestBodyAndUrlParameterAreValidAndUpdateIsSuccessful_Returns200()
+      throws Exception {
     mockMvc
         .perform(
             put("/callbacks?url=https://test.com")
                 .content("""
-                {"frequencySeconds":30}""")
+                    {"frequencySeconds":30}""")
                 .contentType(MediaType.APPLICATION_JSON)
         )
-        .andExpect(status().isNotImplemented());
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json(""" 
+                                      {"url": "https://test.com","frequencySeconds": 30}"""));
+    verify(callbackService, times(1)).updateCallback(
+        argThat(uri -> uri.toString().equals("https://test.com")),
+        eq(30)
+    );
+  }
+
+  @Test
+  void put$callback_RequestBodyAndUrlParameterAreValidButUpdatedIsNotSuccessful_ReturnsAppropriateStatusCode()
+      throws Exception {
+    doThrow(mock(CallbackNotFoundException.class))
+        .when(callbackService)
+        .updateCallback(any(), anyInt());
+    mockMvc
+        .perform(
+            put("/callbacks?url=https://test.com")
+                .content("""
+                    {"frequencySeconds":30}""")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+        .andExpect(status().isNotFound());
   }
 
   @Test
