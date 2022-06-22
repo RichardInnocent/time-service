@@ -1,7 +1,6 @@
 package org.richardinnocent.timeservice.controller.callback;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.richardinnocent.timeservice.services.callbacks.CallbackAlreadyExistsException;
 import org.richardinnocent.timeservice.services.callbacks.CallbackService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,8 +59,7 @@ class CallbackControllerTest {
                              {"frequencySeconds":30,"url":"http://test.com"}""")
                 .contentType(MediaType.APPLICATION_JSON)
         )
-        .andExpect(status().isConflict())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+        .andExpect(status().isConflict());
   }
 
   @Test
