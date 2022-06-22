@@ -1,13 +1,9 @@
 package org.richardinnocent.timeservice.services.callbacks;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
-import java.net.http.HttpRequest.BodyPublisher;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandler;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.time.ZonedDateTime;
 import java.util.function.Supplier;
@@ -20,23 +16,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class CurrentTimeCallback implements Runnable {
 
-  private final HttpClient client;
+  private final HttpClient httpClient;
   private final URI uri;
   private final Supplier<ZonedDateTime> currentTimeSupplier;
   private final ObjectMapper objectMapper;
 
-  public CurrentTimeCallback(URI uri, HttpClient client,ObjectMapper objectMapper) {
-    this(uri, client, objectMapper, ZonedDateTime::now);
+  CurrentTimeCallback(URI uri, HttpClient httpClient,ObjectMapper objectMapper) {
+    this(uri, httpClient, objectMapper, ZonedDateTime::now);
   }
 
   CurrentTimeCallback(
       URI uri,
-      HttpClient client,
+      HttpClient httpClient,
       ObjectMapper objectMapper,
       Supplier<ZonedDateTime> currentTimeSupplier
   ) {
     this.uri = uri;
-    this.client = client;
+    this.httpClient = httpClient;
     this.objectMapper = objectMapper;
     this.currentTimeSupplier = currentTimeSupplier;
   }
@@ -44,6 +40,18 @@ public class CurrentTimeCallback implements Runnable {
   @Override
   public void run() {
     sendUpdate(new TimeUpdateDto(currentTimeSupplier.get()));
+  }
+
+  public HttpClient getHttpClient() {
+    return httpClient;
+  }
+
+  public URI getUri() {
+    return uri;
+  }
+
+  public ObjectMapper getObjectMapper() {
+    return objectMapper;
   }
 
   public String convertToJsonString(TimeUpdateDto dto) {
@@ -64,7 +72,8 @@ public class CurrentTimeCallback implements Runnable {
         .build();
 
     try {
-      client.send(request, BodyHandlers.ofString());
+      // Would ideally check the status of the response and do something with it if it's not 2xx
+      httpClient.send(request, BodyHandlers.ofString());
     } catch (IOException | InterruptedException e) {
       throw new DeliverUpdateException("failed to send HTTP request", e);
     }
