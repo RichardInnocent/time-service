@@ -34,6 +34,8 @@ public class ConcurrentCallbackService implements CallbackService {
 
   @Override
   public void addCallback(URI uri, int frequencySeconds) throws CallbackAlreadyExistsException {
+    // Should really check if the URI is a valid target for an HTTP request and is reachable, but
+    // let's not overcomplicate this here
     Runnable task = taskFactory.createCallback(uri);
     // Rather than putting our own synchronisation block around this, let's rely on the Java to do
     // this more optimally via the ConcurrentHashMap. We do need to know if the state changed though
