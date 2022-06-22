@@ -3,21 +3,25 @@ package org.richardinnocent.timeservice.controller.callback;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 
+import org.hibernate.validator.constraints.URL;
 import org.richardinnocent.timeservice.controller.models.CallbackDto;
 import org.richardinnocent.timeservice.controller.models.ConfigureCallbackDto;
 import org.richardinnocent.timeservice.controller.models.ConfigureFrequencyDto;
 import org.richardinnocent.timeservice.services.callbacks.CallbackService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -26,9 +30,9 @@ import org.springframework.web.bind.annotation.RestController;
     consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = MediaType.APPLICATION_JSON_VALUE
 )
+@Validated
 public class CallbackController {
 
-  private static final RuntimeException NOT_IMPLEMENTED_EXCEPTION = new NotImplementedException();
   private final CallbackService callbackService;
 
   public CallbackController(CallbackService callbackService) {
@@ -51,7 +55,7 @@ public class CallbackController {
    */
   @PutMapping
   public CallbackDto updateCallback(
-      @RequestParam("url") String url,
+      @URL @RequestParam("url") String url,
       @Valid @RequestBody ConfigureFrequencyDto frequencyDto
   ) {
     URI uri = getUri(url);
@@ -62,15 +66,13 @@ public class CallbackController {
   /*
    * Similar comments as above, a DELETE to /callbacks/{callbackId} would be more RESTful, but this
    * is here so I can keep to spec.
+   * Also, ideally this should return the resource that was deleted. I could do this with more time,
+   * but this will do for now.
    */
   @DeleteMapping(consumes = MediaType.ALL_VALUE)
-  public CallbackDto deleteCallback(@RequestParam("url") String url) {
-    throw NOT_IMPLEMENTED_EXCEPTION;
-  }
-
-  @ResponseStatus(HttpStatus.NOT_IMPLEMENTED)
-  private static class NotImplementedException extends RuntimeException {
-    private NotImplementedException() {}
+  public void deleteCallback(@URL @RequestParam("url") String url) {
+    URI uri = getUri(url);
+    callbackService.removeCallback(uri);
   }
 
   private URI getUri(String url) throws URIInvalidException {
@@ -79,6 +81,11 @@ public class CallbackController {
     } catch (URISyntaxException e) {
       throw new URIInvalidException(url, e);
     }
+  }
+
+  @ExceptionHandler({ConstraintViolationException.class})
+  public ResponseEntity<Object> batRequestException(Exception e) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
   }
 
 }

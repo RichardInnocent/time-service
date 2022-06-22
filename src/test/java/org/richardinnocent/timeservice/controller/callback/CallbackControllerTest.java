@@ -70,7 +70,19 @@ class CallbackControllerTest {
         .perform(
             post("/callbacks")
                 .content("""
-                             {"frequencySeconds":0,"url":"https://test.com"}""")
+                             {"frequencySeconds":0,"url":"https://test.com"}""") // 0 frequency
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void post$callback_UrlIsInvalid_Returns400() throws Exception {
+    mockMvc
+        .perform(
+            post("/callbacks")
+                .content("""
+                             {"frequencySeconds":30,"url":"not a valid URL"}""")
                 .contentType(MediaType.APPLICATION_JSON)
         )
         .andExpect(status().isBadRequest());
@@ -137,16 +149,47 @@ class CallbackControllerTest {
   }
 
   @Test
-  void delete$callback_UrlIsSpecified_Returns501() throws Exception {
+  void put$callback_UrlIsInvalid_Returns400() throws Exception {
+    mockMvc
+        .perform(
+            put("/callbacks?url=invalidUrl")
+                .content("""
+                             {"frequencySeconds":30}""")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void delete$callback_UrlIsSpecifiedAndRemovalIsSuccessful_ReturnsOk() throws Exception {
     mockMvc
         .perform(delete("/callbacks?url=https://test.com"))
-        .andExpect(status().isNotImplemented());
+        .andExpect(status().isOk());
+    verify(callbackService, times(1))
+        .removeCallback(argThat(uri -> uri.toString().equals("https://test.com")));
+  }
+
+  @Test
+  void delete$callback_UrlIsSpecifiedButRemovalIsNotSuccessful_ReturnsOk() throws Exception {
+    doThrow(mock(CallbackNotFoundException.class))
+        .when(callbackService)
+        .removeCallback(any());
+    mockMvc
+        .perform(delete("/callbacks?url=https://test.com"))
+        .andExpect(status().isNotFound());
   }
 
   @Test
   void delete$callback_UrlIsNotSpecified_Returns400() throws Exception {
     mockMvc
         .perform(delete("/callbacks"))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void delete$callback_UrlIsInvalid_Returns400() throws Exception {
+    mockMvc
+        .perform(delete("/callbacks?url=invalidUrl"))
         .andExpect(status().isBadRequest());
   }
 
