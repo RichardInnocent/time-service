@@ -42,7 +42,7 @@ public class ConcurrentCallbackService implements CallbackService {
     AtomicBoolean callbackChanged = new AtomicBoolean(false);
     scheduledTasks.computeIfAbsent(uri, previous -> {
       callbackChanged.set(true);
-      return scheduler.schedule(task, frequencySeconds, TimeUnit.SECONDS);
+      return scheduler.scheduleAtFixedRate(task, 0, frequencySeconds, TimeUnit.SECONDS);
     });
 
     if (!callbackChanged.get()) {
@@ -63,7 +63,10 @@ public class ConcurrentCallbackService implements CallbackService {
         throw new CallbackNotFoundException(uri);
       }
       oldTask.cancel(false);
-      scheduledTasks.put(uri, scheduler.schedule(task, frequencySeconds, TimeUnit.SECONDS));
+      scheduledTasks.put(
+          uri,
+          scheduler.scheduleAtFixedRate(task, 0, frequencySeconds, TimeUnit.SECONDS)
+      );
     }
   }
 

@@ -35,7 +35,7 @@ class ConcurrentCallbackServiceTest {
     when(taskFactory.createCallback(eq(URI))).thenReturn(callbackTask);
     doReturn(mock(ScheduledFuture.class, "default scheduled task"))
         .when(scheduler)
-        .schedule(eq(callbackTask), anyLong(), eq(TimeUnit.SECONDS));
+        .scheduleAtFixedRate(eq(callbackTask), anyLong(), anyLong(), eq(TimeUnit.SECONDS));
   }
 
   @Test
@@ -43,7 +43,7 @@ class ConcurrentCallbackServiceTest {
     int frequencySeconds = 100;
     service.addCallback(URI, frequencySeconds);
     verify(scheduler, times(1))
-        .schedule(callbackTask, frequencySeconds, TimeUnit.SECONDS);
+        .scheduleAtFixedRate(callbackTask, 0, frequencySeconds, TimeUnit.SECONDS);
   }
 
   @Test
@@ -59,17 +59,27 @@ class ConcurrentCallbackServiceTest {
         mock(ScheduledFuture.class, "original scheduled task");
     doReturn(originalScheduledFuture)
         .when(scheduler)
-        .schedule(eq(callbackTask), eq((long) originalFrequencySeconds), eq(TimeUnit.SECONDS));
+        .scheduleAtFixedRate(
+            eq(callbackTask),
+            eq(0L),
+            eq((long) originalFrequencySeconds),
+            eq(TimeUnit.SECONDS)
+        );
 
     service.addCallback(URI, originalFrequencySeconds);
     verify(scheduler, times(1))
-        .schedule(callbackTask, originalFrequencySeconds, TimeUnit.SECONDS);
+        .scheduleAtFixedRate(callbackTask, 0,  originalFrequencySeconds, TimeUnit.SECONDS);
 
     int newFrequencySeconds = 50;
     service.updateCallback(URI, newFrequencySeconds);
     verify(originalScheduledFuture, times(1)).cancel(false);
     verify(scheduler, times(1))
-        .schedule(callbackTask, newFrequencySeconds, TimeUnit.SECONDS);
+        .scheduleAtFixedRate(
+            callbackTask,
+            0L,
+            newFrequencySeconds,
+            TimeUnit.SECONDS
+        );
   }
 
   @Test
@@ -84,11 +94,16 @@ class ConcurrentCallbackServiceTest {
         mock(ScheduledFuture.class, "scheduled task");
     doReturn(scheduledFuture)
         .when(scheduler)
-        .schedule(eq(callbackTask), eq((long) frequencySeconds), eq(TimeUnit.SECONDS));
+        .scheduleAtFixedRate(
+            eq(callbackTask),
+            eq(0L),
+            eq((long) frequencySeconds),
+            eq(TimeUnit.SECONDS)
+        );
 
     service.addCallback(URI, frequencySeconds);
     verify(scheduler, times(1))
-        .schedule(callbackTask, frequencySeconds, TimeUnit.SECONDS);
+        .scheduleAtFixedRate(callbackTask, 0, frequencySeconds, TimeUnit.SECONDS);
 
     service.removeCallback(URI);
     verify(scheduledFuture, times(1)).cancel(false);
