@@ -8,6 +8,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,21 +54,17 @@ public class ConcurrentCallbackService implements CallbackService {
   @Override
   public void updateCallback(URI uri, int frequencySeconds) throws CallbackNotFoundException {
     Runnable task = taskFactory.createCallback(uri);
-    synchronized (scheduledTasks) {
-      var oldTask = scheduledTasks.get(uri);
-      if (oldTask == null) {
-        // Exceptions are expensive, so do we want to throw the exception synchronously like this?
-        // We could store this data in a different field and defer the exception until after this
-        // block. This will decrease readability, and is difficult to assess the performance
-        // improvement this would bring without benchmark tests.
-        throw new CallbackNotFoundException(uri);
-      }
-      oldTask.cancel(false);
-      scheduledTasks.put(
-          uri,
-          scheduler.scheduleAtFixedRate(task, 0, frequencySeconds, TimeUnit.SECONDS)
-      );
+    // Rather than putting our own synchronisation block around this, let's rely on the Java to do
+    // this more optimally via the ConcurrentHashMap. We do need to know if the state changed though
+    AtomicReference<ScheduledFuture<?>> previousTaskReference = new AtomicReference<>();
+    scheduledTasks.computeIfPresent(uri, (key, previousTask) -> {
+      previousTaskReference.set(previousTask);
+      return scheduler.scheduleAtFixedRate(task, 0, frequencySeconds, TimeUnit.SECONDS);
+    });
+    if (previousTaskReference.get() == null) {
+      throw new CallbackNotFoundException(uri);
     }
+    previousTaskReference.get().cancel(false);
   }
 
   @Override
