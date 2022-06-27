@@ -109,6 +109,8 @@ look odd.
 clearly the intended case based off of this specification, but needlessly limits for extensibility
 of the service.
 
+Additionally, the `DELETE` route would ideally return the resource that was deleted.
+
 As a small side-note, it may also be useful to provide a `GET` route which returns the current
 frequency configuration for that URL/ID.
 
