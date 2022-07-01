@@ -1,5 +1,7 @@
 package org.richardinnocent.timeservice.controller.callback;
 
+import java.net.URI;
+
 import org.junit.jupiter.api.Test;
 import org.richardinnocent.timeservice.services.callbacks.CallbackAlreadyExistsException;
 import org.richardinnocent.timeservice.services.callbacks.CallbackNotFoundException;
@@ -49,9 +51,12 @@ class CallbackControllerTest {
   }
 
   @Test
-  void post$callback_RequestBodyIsValidButCallbackIsNotAddedSuccessfully_ReturnsAppropriateResponseCode()
+  void post$callback_RequestBodyIsValidButCallbackIsNotAddedSuccessfully_ReturnsConflict()
       throws Exception {
-    doThrow(mock(CallbackAlreadyExistsException.class))
+    URI uri = new URI("https://test.com");
+    Exception callbackAlreadyExistsException = new CallbackAlreadyExistsException(uri);
+
+    doThrow(callbackAlreadyExistsException)
         .when(callbackService)
         .addCallback(any(), anyInt());
     mockMvc
@@ -61,7 +66,9 @@ class CallbackControllerTest {
                              {"frequencySeconds":30,"url":"https://test.com"}""")
                 .contentType(MediaType.APPLICATION_JSON)
         )
-        .andExpect(status().isConflict());
+        .andExpect(status().isConflict())
+        .andExpect(content().json("""
+                                  {"message": "callback already exists", "url": "https://test.com"}"""));
   }
 
   @Test

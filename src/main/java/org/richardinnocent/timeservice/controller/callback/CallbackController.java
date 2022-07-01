@@ -10,6 +10,7 @@ import org.hibernate.validator.constraints.URL;
 import org.richardinnocent.timeservice.controller.models.CallbackDto;
 import org.richardinnocent.timeservice.controller.models.ConfigureCallbackDto;
 import org.richardinnocent.timeservice.controller.models.ConfigureFrequencyDto;
+import org.richardinnocent.timeservice.services.callbacks.CallbackAlreadyExistsException;
 import org.richardinnocent.timeservice.services.callbacks.CallbackService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -86,6 +87,14 @@ public class CallbackController {
   @ExceptionHandler({ConstraintViolationException.class})
   public ResponseEntity<Object> badRequestException(Exception e) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+  }
+
+  @ExceptionHandler({CallbackAlreadyExistsException.class})
+  public ResponseEntity<Object> callbackAlreadyExists(CallbackAlreadyExistsException e) {
+    return ResponseEntity
+        .status(HttpStatus.CONFLICT)
+        .body("""
+                  {"message":"%s","url":"%s"}""".formatted(e.getMessage(), e.getUri()));
   }
 
 }

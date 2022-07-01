@@ -1,0 +1,62 @@
+POST http://localhost:8080/callbacks
+Content-Type: application/json
+
+{
+  "frequencySeconds": 10,
+  "url": "http://localhost:8081/10-seconds"
+}
+
+<> 2022-07-01T125324.409.txt
+
+###
+
+POST http://localhost:8080/callbacks
+Content-Type: application/json
+
+{
+  "frequencySeconds": 10,
+  "url": "http://localhost:8081/10-seconds"
+}
+
+<> 2022-07-01T125315.200.json
+
+###
+
+DELETE http://localhost:8080/callbacks?url=http://localhost:8081/10-seconds
+
+###
+
+PUT http://localhost:8080/callbacks?url=http://localhost:8081/10-seconds
+Content-Type: application/json
+
+{
+  "frequencySeconds": 5
+}
+
+<> 2022-07-01T111606.200.json
+
+###
+
+PUT http://localhost:8080/callbacks?url=http://localhost:8081/10-seconds
+Content-Type: application/json
+
+{
+  "frequencySeconds": 5,
+}
+
+<> 2022-07-01T111509.400.json
+
+###
+
+POST http://localhost:8080/callbacks
+Content-Type: application/json
+
+{
+  "frequencySeconds": 10,
+  "url": "http://localhost:8081/10-seconds"
+}
+
+<> 2022-07-01T111258.200.json
+
+###
+

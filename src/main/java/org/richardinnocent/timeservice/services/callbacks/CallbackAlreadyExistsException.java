@@ -8,7 +8,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.CONFLICT)
 public class CallbackAlreadyExistsException extends RuntimeException {
 
+  private final URI uri;
+
   public CallbackAlreadyExistsException(URI uri) {
-    super("Callback with URI " + uri + " already exists");
+    super("callback already exists");
+    this.uri = uri;
+  }
+
+  public URI getUri() {
+    return uri;
   }
 }
