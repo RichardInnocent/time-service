@@ -106,7 +106,7 @@ primary reasons:
 1. You'd end up with URL-encoded IDs. Not sure if this would actually be a problem, but it would
 look odd.
 2. You'd be tied to only ever being able to have one registered scheduled update per URL. This is
-clearly the intended case based off of this specification, but needlessly limits for extensibility
+clearly the intended case based off of this specification, but needlessly limits the extensibility
 of the service.
 
 Additionally, the `DELETE` route would ideally return the resource that was deleted.
