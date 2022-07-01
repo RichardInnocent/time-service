@@ -86,7 +86,7 @@ it's reachable, and return a bad request if not.
 We have response codes like Bad Request returned from our API but the response bodies are not at all
 helpful currently. This could greatly be improved.
 
-## Make more RESTful
+### Make more RESTful
 The URLs for the `PUT` and `DELETE` routes aren't particularly nice to interface with. To be more
 RESTful, I'd rather have each registered callback receive an ID that could then be referenced
 directly as a path variable. i.e., rather than
