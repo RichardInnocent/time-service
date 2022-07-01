@@ -84,7 +84,7 @@ public class CallbackController {
   }
 
   @ExceptionHandler({ConstraintViolationException.class})
-  public ResponseEntity<Object> batRequestException(Exception e) {
+  public ResponseEntity<Object> badRequestException(Exception e) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
   }
 
